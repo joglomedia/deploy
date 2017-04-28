@@ -254,8 +254,8 @@ cp php/${PHPVer}/fpm/pool.d/www.conf /etc/php/${PHPVer}/fpm/pool.d/
 # Fix cgi.fix_pathinfo
 sed -i "s/cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php/${PHPVer}/fpm/php.ini
 
-# Restart Php5-fpm server
-service php5-fpm restart
+# Restart Php-fpm server
+service php${PHPVer}-fpm restart
 
 echo "Installing Memcached and Php memcached module..."
 
