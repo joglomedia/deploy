@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 # simpleLNMPinstaller.sh is a Simple LNMP Installer for Ubuntu
-#	- Nginx 1.6
-#	- MariaDB 10.0.15 (MySQL drop-in replacement)
+#	- Nginx 1.10
+#	- MariaDB 10.1 (MySQL drop-in replacement)
 #	- PHP 5.6/7.0/7.1
 #	- Zend OpCache 7.0.3
 #	- Memcached 1.4.14
@@ -24,13 +24,18 @@ fi
 if [ ! -f "/etc/lsb-release" ]; then
 	echo "This installer only work on Ubuntu server..." 1>&2
 	exit 1
+else
+	# Variables
+	arch=$(uname -p)
+	IPAddr=$(hostname -i)
+	. /etc/lsb-release
 fi
 
 function header_msg {
 clear
 cat <<- _EOF_
 #========================================================================#
-# SimpleLNMPIntaller v1.1.2-dev for Ubuntu Server, Written by MasEDI.Net #
+# SimpleLNMPIntaller v1.2.0-dev for Ubuntu Server, Written by MasEDI.Net #
 #========================================================================#
 #     A small tool to install Nginx + MariaDB (MySQL) + PHP on Linux     #
 #                                                                        #
@@ -39,19 +44,11 @@ cat <<- _EOF_
 _EOF_
 sleep 1
 }
-
 header_msg
 
-# Variables
-arch=$(uname -p)
-
-# Remove Apache2 & mysql services if exist
-killall apache2 && killall mysql
-apt-get --purge remove -y apache2 apache2-doc apache2-utils apache2.2-common apache2.2-bin apache2-mpm-prefork apache2-doc apache2-mpm-worker mysql-client mysql-server mysql-common
-apt-get autoremove -y
-
-
 ### CLONE LNMP CUSTOM CONFIGS ###
+
+echo "Clone LNMP installer scripts..."
 
 # Clone the deployment server config
 git clone https://github.com/joglomedia/deploy.git deploy
@@ -60,12 +57,21 @@ git clone https://github.com/joglomedia/deploy.git deploy
 find deploy -type d -print0 | xargs -0 chmod 755
 find deploy -type f -print0 | xargs -0 chmod 644
 
+# change to main installer directory
+cd deploy
+
+echo "Uninstall existing Webserver (Apache) and MySQL server..."
+
+# Remove Apache2 & mysql services if exist
+killall apache2 && killall mysql
+apt-get --purge remove -y apache2 apache2-doc apache2-utils apache2.2-common apache2.2-bin apache2-mpm-prefork apache2-doc apache2-mpm-worker mysql-client mysql-server mysql-common
+apt-get autoremove -y
+
 
 ### ADD REPOS ###
 
-# Add Nginx latest stable from PPA repo
-# Source: https://launchpad.net/~nginx/+archive/ubuntu/stable
-#add-apt-repository ppa:nginx/stable
+echo "Adding repositories..."
+
 # install nginx custom with ngx cache purge from rtCamp's repo
 # https://rtcamp.com/wordpress-nginx/tutorials/single-site/fastcgi-cache-with-purging/
 add-apt-repository ppa:rtcamp/nginx
@@ -84,6 +90,8 @@ deb [arch=amd64,i386] http://ftp.osuosl.org/pub/mariadb/repo/10.1/ubuntu trusty 
 deb-src http://ftp.osuosl.org/pub/mariadb/repo/10.1/ubuntu trusty main
 EOL
 
+echo "Update repository and install pre-requisite..."
+
 # Update repos
 apt-get update -y
 
@@ -93,39 +101,43 @@ apt-get install -y software-properties-common python-software-properties build-e
 
 ### INSTALL Nginx ###
 
+echo "Installing Nginx webserver..."
+
 # Install Nginx custom
-apt-get install -y nginx-custom
+apt-get install -y --allow-unauthenticated nginx-custom
 
 # Copy custom Nginx Config
-mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
-cp -f deploy/nginx/nginx.conf /etc/nginx/
-cp -f deploy/nginx/fastcgi_cache /etc/nginx/
-cp -f deploy/nginx/fastcgi_https_map /etc/nginx/
-cp -f deploy/nginx/fastcgi_params /etc/nginx/
-cp -f deploy/nginx/http_cloudflare_ips /etc/nginx/
-cp -f deploy/nginx/http_proxy_ips /etc/nginx/
-cp -f deploy/nginx/proxy_cache /etc/nginx/
-cp -f deploy/nginx/proxy_params /etc/nginx/
-cp -f deploy/nginx/upstream.conf /etc/nginx/
-cp -fr deploy/nginx/conf.vhost /etc/nginx/
-cp -fr deploy/nginx/ssl /etc/nginx/
-mv /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
-cp -f deploy/nginx/sites-available/default /etc/nginx/sites-available/
-cp -f deploy/nginx/sites-available/phpmyadmin.conf /etc/nginx/sites-available/
-cp -f deploy/nginx/sites-available/adminer.conf /etc/nginx/sites-available/
-cp -f deploy/nginx/sites-available/sample-wordpress.dev.conf /etc/nginx/sites-available/
-cp -f deploy/nginx/sites-available/sample-wordpress-ms.dev.conf /etc/nginx/sites-available/
-cp -f deploy/nginx/sites-available/ssl.sample-site.dev.conf /etc/nginx/sites-available/
+mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.old
+cp -f nginx/nginx.conf /etc/nginx/
+cp -f nginx/fastcgi_cache /etc/nginx/
+cp -f nginx/fastcgi_https_map /etc/nginx/
+cp -f nginx/fastcgi_params /etc/nginx/
+cp -f nginx/http_cloudflare_ips /etc/nginx/
+cp -f nginx/http_proxy_ips /etc/nginx/
+cp -f nginx/proxy_cache /etc/nginx/
+cp -f nginx/proxy_params /etc/nginx/
+cp -f nginx/upstream.conf /etc/nginx/
+cp -fr nginx/conf.vhost/ /etc/nginx/
+cp -fr nginx/ssl/ /etc/nginx/
+mv /etc/nginx/sites-available/default /etc/nginx/sites-available/default.old
+cp -f nginx/sites-available/default /etc/nginx/sites-available/
+cp -f nginx/sites-available/phpmyadmin.conf /etc/nginx/sites-available/
+cp -f nginx/sites-available/adminer.conf /etc/nginx/sites-available/
+cp -f nginx/sites-available/sample-wordpress.dev.conf /etc/nginx/sites-available/
+cp -f nginx/sites-available/sample-wordpress-ms.dev.conf /etc/nginx/sites-available/
+cp -f nginx/sites-available/ssl.sample-site.dev.conf /etc/nginx/sites-available/
 unlink /etc/nginx/sites-enabled/default
 ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/01-default
+
+# Nginx cache directory
 mkdir /var/cache/nginx/
 mkdir /var/cache/nginx/fastcgi_temp
 mkdir /var/cache/nginx/proxy_temp
 
-# Check server IP address
+# Check IP Address
 IPAddr=$(curl -s http://ipecho.net/plain)
 # Make default server accessible from IP address
-sed -i "s/localhost.localdomain/$IPAddr/g" /etc/nginx/sites-available/default
+sed -i "s@localhost.localdomain@$IPAddr@g" /etc/nginx/sites-available/default
 
 # Restart Nginx server
 service nginx restart
@@ -134,7 +146,8 @@ service nginx restart
 
 
 ### INSTALL PHP ###
-echo "Which version of PHP5 you want to install (default is 5.6)?
+echo "Installing PHP..."
+echo "Which version of PHP you want to install (default is 5.6)?
 Supported PHP version:
 1). PHP 5.6 (old stable)
 2). PHP 7.0 (latest stable)
@@ -156,6 +169,8 @@ fi
 
 # Install PHP packages
 apt-get install -y $PHPkgs php-geoip php-pear pkg-php-tools
+
+echo "Installing PHP loaders (ionCube & Source Guardian)..."
 
 # Install PHP loaders
 mkdir /usr/lib/php/loaders
@@ -246,18 +261,19 @@ if [ "x$OPCACHEPATH" = "x" ]; then
 fi
 
 # PHP Setting + Optimization #
+echo "Optimizing PHP configuration..."
 
 # Copy custom php.ini
-#mv /etc/php/${PHPVer}/fpm/php.ini /etc/php/${PHPVer}/fpm/php.ini.bak
-#cp deploy/php/${PHPVer}/fpm/php.ini /etc/php/${PHPVer}/fpm/
+mv /etc/php/${PHPVer}/fpm/php.ini /etc/php/${PHPVer}/fpm/php.ini.old
+cp php/${PHPVer}/fpm/php.ini /etc/php/${PHPVer}/fpm/
 
-# Copy the optimized-version of php5-fpm config file
-mv /etc/php/${PHPVer}/fpm/php-fpm.conf /etc/php/${PHPVer}/fpm/php-fpm.conf.bak
-cp deploy/php/${PHPVer}/fpm/php-fpm.conf /etc/php/${PHPVer}/fpm/
+# Copy the optimized-version of php-fpm config file
+mv /etc/php/${PHPVer}/fpm/php-fpm.conf /etc/php/${PHPVer}/fpm/php-fpm.conf.old
+cp php/${PHPVer}/fpm/php-fpm.conf /etc/php/${PHPVer}/fpm/
 
 # Copy the optimized-version of php5-fpm default pool
-mv /etc/php/${PHPVer}/fpm/pool.d/www.conf /etc/php/${PHPVer}/fpm/pool.d/www.conf.bak
-cp deploy/php/${PHPVer}/fpm/pool.d/www.conf /etc/php/${PHPVer}/fpm/pool.d/
+mv /etc/php/${PHPVer}/fpm/pool.d/www.conf /etc/php/${PHPVer}/fpm/pool.d/www.conf.old
+cp php/${PHPVer}/fpm/pool.d/www.conf /etc/php/${PHPVer}/fpm/pool.d/
 
 # Fix cgi.fix_pathinfo
 sed -i "s/cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php/${PHPVer}/fpm/php.ini
@@ -265,6 +281,7 @@ sed -i "s/cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php/${PHPVer}/fpm/php.in
 # Restart Php5-fpm server
 service php5-fpm restart
 
+echo "Installing Memcached and Php memcached module..."
 
 # Install memcached?
 apt-get install -y memcached php-memcached php-memcache
@@ -294,6 +311,7 @@ service memcached restart
 
 
 ### INSTALL MySQL DATABASE ###
+echo "Installing MariaDB server..."
 
 # Install MariaDB
 apt-get install -y mariadb-server-10.1 mariadb-client-10.1 mariadb-server-core-10.1 mariadb-common mariadb-server libmariadbclient18 mariadb-client-core-10.1
@@ -315,6 +333,7 @@ service mysql restart
 
 
 ### INSTALL ADDSON ###
+echo "Installing Adds on..."
 
 # Update local time
 apt-get install -y ntpdate
@@ -324,7 +343,7 @@ ntpdate -d cn.pool.ntp.org
 apt-get install -y postfix
 
 # Install Nginx Vhost Creator
-cp -f deploy/scripts/ngxvhost.sh /usr/local/bin/ngxvhost
+cp -f scripts/ngxvhost.sh /usr/local/bin/ngxvhost
 chmod ugo+x /usr/local/bin/ngxvhost
 
 # Install Web-viewer Tools
@@ -368,5 +387,5 @@ echo "# Found any bugs / errors / suggestions? please let me know....           
 echo "# If this script useful, don't forget to buy me a coffee or milk... :D     #"
 echo "# My PayPal is always open for donation, send your tips here hi@masedi.net #"
 echo "#                                                                          #"
-echo "# (c) 2015 - MasEDI.Net - http://masedi.net ;)                             #"
+echo "# (c) 2015-2017 - MasEDI.Net - http://masedi.net ;)                        #"
 echo "#==========================================================================#"

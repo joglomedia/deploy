@@ -276,7 +276,7 @@ cat <<- _EOF_
 <html>
   <head>
     <title>It Works!</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />	
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="robots" content="index, follow" />
     <meta name="description" content="This is a default index page for Nginx server generated with ngxvhost tool from http://masedi.net" />
   </head>
@@ -287,7 +287,7 @@ cat <<- _EOF_
         <p style="font-size:90%;">Generated using <em>ngxvhost</em> from <a href="https://masedi.net/ngxvhost/">Nginx vHost Tool</a>, simple <a href="http://nginx.org/" rel="nofollow">Nginx</a> web server management tool.</p>
     </div>
   </body>
-</html>	
+</html>
 _EOF_
 }
 
@@ -313,11 +313,11 @@ function create_fpm_pool_conf {
 
 	slowlog = /var/log/php5.6-fpm_slow.\$pool.log
 	request_slowlog_timeout = 1
-	 
+
 	chdir = /
 
 	security.limit_extensions = .php .php3 .php4 .php5
-	 
+
 	;php_admin_value[sendmail_path] = /usr/sbin/sendmail -t -i -f you@yourmail.com
 	php_flag[display_errors] = on
 	php_admin_value[error_log] = /var/log/php5.6-fpm.\$pool.log
@@ -386,7 +386,7 @@ if [ -f "/etc/nginx/sites-available/${ServerName}.conf" ]; then
 	show_usage
 else
 	# Creates document root
-	if [ ! -d $DocumentRoot ]; then 
+	if [ ! -d $DocumentRoot ]; then
 		mkdir -p $DocumentRoot
 		#chown USER:USER $DocumentRoot #POSSIBLE IMPLEMENTATION, new flag -u ?
 		chown -R $UserName:$UserName $DocumentRoot
@@ -396,7 +396,7 @@ else
 	# Ugly hacks for custom Platform-specific configs + Skeleton auto installer.
 	case $Platform in
 		laravel)
-			# create vhost			
+			# create vhost
 			create_laravel_vhost > /etc/nginx/sites-available/${ServerName}.conf
 
 			# TODO: Auto install Laravel framework skeleton
@@ -417,7 +417,7 @@ else
 		;;
 
 		phalcon)
-			# create vhost			
+			# create vhost
 			create_phalcon_vhost > /etc/nginx/sites-available/${ServerName}.conf
 
 			# TODO: Auto install Phalcon PHP framework skeleton
@@ -502,24 +502,24 @@ else
 		;;
 
 		*)
-			# create vhost			
+			# create vhost
 			create_vhost > /etc/nginx/sites-available/$ServerName.conf
 
 			# create default index file
 			create_indexfile >> $DocumentRoot/index.html
 			chown $UserName:$UserName $DocumentRoot/index.html
-		;;	
+		;;
 	esac
 
 	# Fix document root ownership
 	chown -R $UserName:$UserName $DocumentRoot
-	
+
 	# Fix document root permission
 	if [ "$(ls -A $DocumentRoot)" ]; then
 		find $DocumentRoot -type d -print0 | xargs -0 chmod 755
 		find $DocumentRoot -type f -print0 | xargs -0 chmod 644
 	fi
-	
+
 	# Enable site
 	cd /etc/nginx/sites-enabled/
 	ln -s /etc/nginx/sites-available/$ServerName.conf $ServerName.conf
@@ -527,7 +527,7 @@ else
 	# Reload Nginx
 	echo "Reload Nginx configuration..."
 	service nginx reload -s #Optional implementation
-	
+
 	if [ "${Platform}" = "wordpress-ms" ]; then
 		echo ""
 		echo "Note: You're installing Wordpress Multisite, please activate Nginx Helper plugin to work properly."

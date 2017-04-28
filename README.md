@@ -41,7 +41,7 @@ sudo ngxvhost -u username -s example.com -t default -d /home/username/Webs/examp
 ```
 Ngxvhost Parameters:
 
-* -u your username
+* -u your username (DO NOT using root login)
 * -s your website domain name
 * -t website type, available options: default, laravel, phalcon, wordpress, wordpress-ms
 * -d absolute path to your site directory containing the index file
