@@ -2,7 +2,7 @@ Simple LNMP Installer
 =====
 
 Simple server deployment scripts for GNU/Linux Ubuntu. 
-Tested in GNU/Linux Ubuntu 12.04 & 14.04, and Linux Mint 17 (Rebecca).
+Tested in GNU/Linux Ubuntu 14.04 & 16.04, and Linux Mint 17 & 18.
 
 Features
 =====
