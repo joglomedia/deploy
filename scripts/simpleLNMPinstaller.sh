@@ -71,32 +71,48 @@ apt-get autoremove -y
 ### ADD REPOS ###
 echo "Adding repositories..."
 
-# Nginx custom with ngx cache purge
 if [[ "$DISTRIB_RELEASE" = "16.04" || "$DISTRIB_RELEASE" = "18" ]]; then
 	# Ubuntu release 16.04, LinuxMint 18
+	OS_DISTRIB="xenial"
+
+	# Nginx custom with ngx cache purge
 	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3050AC3CD2AE6F03
 	sh -c "echo 'deb http://download.opensuse.org/repositories/home:/rtCamp:/EasyEngine/xUbuntu_16.04/ /' >> /etc/apt/sources.list.d/nginx-xenial.list"
 	# Add nginx service to systemd
 	#wget --no-check-certificate https://gist.githubusercontent.com/joglomedia/3bb43ee9b17262f07dbe805aac3aee15/raw/d90c02a31c2873a0340b82554a4ec571568eb202/nginx.service -O /lib/systemd/system/nginx.service
+
+	# Add MariaDB repo from MariaDB repo configuration tool
+	apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
+	touch /etc/apt/sources.list.d/MariaDB-xenial.list
+	cat > /etc/apt/sources.list.d/MariaDB-xenial.list <<EOL
+	# MariaDB 10.1 repository list - created 2014-11-30 14:04 UTC
+	# http://mariadb.org/mariadb/repositories/
+	deb [arch=amd64,i386] http://ftp.osuosl.org/pub/mariadb/repo/10.1/ubuntu xenial main
+	deb-src http://ftp.osuosl.org/pub/mariadb/repo/10.1/ubuntu xenial main
+	EOL
 else
-	# Ubuntu release 14.04
+	# Ubuntu release 14.04, LinuxMint 17
+	OS_DISTRIB="trusty"
+
+	# Nginx custom with ngx cache purge
 	# https://rtcamp.com/wordpress-nginx/tutorials/single-site/fastcgi-cache-with-purging/
 	add-apt-repository ppa:rtcamp/nginx
+	
+	# Add MariaDB repo from MariaDB repo configuration tool
+	apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xcbcb082a1bb943db
+	touch /etc/apt/sources.list.d/MariaDB-trusty.list
+	cat > /etc/apt/sources.list.d/MariaDB-trusty.list <<EOL
+	# MariaDB 10.1 repository list - created 2014-11-30 14:04 UTC
+	# http://mariadb.org/mariadb/repositories/
+	deb [arch=amd64,i386] http://ftp.osuosl.org/pub/mariadb/repo/10.1/ubuntu trusty main
+	deb-src http://ftp.osuosl.org/pub/mariadb/repo/10.1/ubuntu trusty main
+	EOL
 fi
 
 # Add PHP (5.6/7.0/7.1 latest stable) from Ondrej's repo
 # Source: https://launchpad.net/~ondrej/+archive/ubuntu/php
 add-apt-repository ppa:ondrej/php
 
-# Add MariaDB repo from MariaDB repo configuration tool
-apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xcbcb082a1bb943db
-touch /etc/apt/sources.list.d/MariaDB.list
-cat > /etc/apt/sources.list.d/MariaDB.list <<EOL
-# MariaDB 10.1 repository list - created 2014-11-30 14:04 UTC
-# http://mariadb.org/mariadb/repositories/
-deb [arch=amd64,i386] http://ftp.osuosl.org/pub/mariadb/repo/10.1/ubuntu trusty main
-deb-src http://ftp.osuosl.org/pub/mariadb/repo/10.1/ubuntu trusty main
-EOL
 
 echo "Update repository and install pre-requisite..."
 
