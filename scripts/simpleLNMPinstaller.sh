@@ -226,48 +226,6 @@ EOL
 ln -s /etc/php/${PHPVer}/mods-available/sourceguardian.ini /etc/php/${PHPVer}/fpm/conf.d/05-sourceguardian.ini
 ln -s /etc/php/${PHPVer}/mods-available/sourceguardian.ini /etc/php/${PHPVer}/cli/conf.d/05-sourceguardian.ini
 
-### Install Zend OpCache ###
-# Make sure Zend OpCache not yet installed by default
-OPCACHEPATH=$(find /usr/lib/php/${PHPVer}/ -name 'opcache.so')
-if [ -z "$OPCACHEPATH" ]; then
-    pecl install zendopcache-7.0.3
-    OPCACHEPATH=$(find /usr/lib/php/${PHPVer}/ -name 'opcache.so')
-    # Enable Zend OpCache module
-    ln -s /etc/php/${PHPVer}/mods-available/opcache.ini /etc/php/${PHPVer}/fpm/conf.d/05-opcache.ini
-    ln -s /etc/php/${PHPVer}/mods-available/opcache.ini /etc/php/${PHPVer}/cli/conf.d/05-opcache.ini
-
-	# Add custom settings for Zend OpCache
-	cat > /etc/php/${PHPVer}/mods-available/opcache.ini <<EOL
-	; configuration for php ZendOpcache module
-	; priority=05
-	zend_extension=${OPCACHEPATH}
-
-	; Tunning/Optimization settings
-	opcache.enable=1
-	opcache.enable_cli=1
-	opcache.cache_full=1
-	opcache.memory_consumption=128
-	opcache.interned_strings_buffer=16
-	opcache.max_accelerated_files=10000
-	opcache.max_wasted_percentage=5
-	opcache.save_comments=0
-	opcache.load_comments=0
-	opcache.fast_shutdown=1
-	opcache.max_file_size=5M
-
-	;;; Following can be commented for production server ;;;
-
-	; Setting regarding opcode cache expiration
-	; If disabled, you must reset OPcache manually
-	opcache.validate_timestamps=1
-	; how often (in seconds) should the code cache expire and check if your code has changed
-	opcache.revalidate_freq=60
-
-	; Additional setting for Frontend Script Cache like WordPress + Plugin cache
-	opcache.consistency_checks=1
-	EOL
-fi
-
 # PHP Setting + Optimization #
 echo "Optimizing PHP configuration..."
 
