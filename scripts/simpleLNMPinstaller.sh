@@ -84,12 +84,12 @@ if [[ "$DISTRIB_RELEASE" = "16.04" || "$DISTRIB_RELEASE" = "18" ]]; then
 	# Add MariaDB repo from MariaDB repo configuration tool
 	apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
 	touch /etc/apt/sources.list.d/MariaDB-xenial.list
-	cat > /etc/apt/sources.list.d/MariaDB-xenial.list <<EOL
-	# MariaDB 10.1 repository list - created 2014-11-30 14:04 UTC
-	# http://mariadb.org/mariadb/repositories/
-	deb [arch=amd64,i386] http://ftp.osuosl.org/pub/mariadb/repo/10.1/ubuntu xenial main
-	deb-src http://ftp.osuosl.org/pub/mariadb/repo/10.1/ubuntu xenial main
-	EOL
+cat > /etc/apt/sources.list.d/MariaDB-xenial.list <<EOL
+# MariaDB 10.1 repository list - created 2014-11-30 14:04 UTC
+# http://mariadb.org/mariadb/repositories/
+deb [arch=amd64,i386] http://ftp.osuosl.org/pub/mariadb/repo/10.1/ubuntu xenial main
+deb-src http://ftp.osuosl.org/pub/mariadb/repo/10.1/ubuntu xenial main
+EOL
 else
 	# Ubuntu release 14.04, LinuxMint 17
 	OS_DISTRIB="trusty"
@@ -101,12 +101,12 @@ else
 	# Add MariaDB repo from MariaDB repo configuration tool
 	apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xcbcb082a1bb943db
 	touch /etc/apt/sources.list.d/MariaDB-trusty.list
-	cat > /etc/apt/sources.list.d/MariaDB-trusty.list <<EOL
-	# MariaDB 10.1 repository list - created 2014-11-30 14:04 UTC
-	# http://mariadb.org/mariadb/repositories/
-	deb [arch=amd64,i386] http://ftp.osuosl.org/pub/mariadb/repo/10.1/ubuntu trusty main
-	deb-src http://ftp.osuosl.org/pub/mariadb/repo/10.1/ubuntu trusty main
-	EOL
+cat > /etc/apt/sources.list.d/MariaDB-trusty.list <<EOL
+# MariaDB 10.1 repository list - created 2014-11-30 14:04 UTC
+# http://mariadb.org/mariadb/repositories/
+deb [arch=amd64,i386] http://ftp.osuosl.org/pub/mariadb/repo/10.1/ubuntu trusty main
+deb-src http://ftp.osuosl.org/pub/mariadb/repo/10.1/ubuntu trusty main
+EOL
 fi
 
 # Add PHP (5.6/7.0/7.1 latest stable) from Ondrej's repo
@@ -340,7 +340,7 @@ git clone https://github.com/elijaa/phpmemcachedadmin.git /usr/share/nginx/html/
 
 # Install Adminer for Web-based MySQL Administration Tool
 mkdir /usr/share/nginx/html/tools/adminer/
-wget http://sourceforge.net/projects/adminer/files/latest/download?source=files -O /usr/share/nginx/html/tools/adminer/index.php
+wget --no-check-certificate https://github.com/vrana/adminer/releases/download/v4.3.1/adminer-4.3.1.php -O /usr/share/nginx/html/tools/adminer/index.php
 
 # Install PHP Info
 cat > /usr/share/nginx/html/tools/phpinfo.php <<EOL

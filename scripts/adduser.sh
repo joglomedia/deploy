@@ -59,7 +59,7 @@ echo "${namauser}:${katasandi}" | chpasswd
 
 echo -n "Add user ${namauser} to sudoers? (y/n): "
 read setsudoers
-if [ "${setgroup}" = "y" ]; then
+if [ "${setsudoers}" = "y" ]; then
 	usermod -aG sudo $namauser
 fi
 
