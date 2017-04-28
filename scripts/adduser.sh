@@ -33,9 +33,9 @@ fi
 echo -n "Allow shell access? (y/n): "
 read aksessh
 if [ "${aksessh}" = "y" ]; then
-	setusershell="/bin/bash"
+	setusershell="-s /bin/bash"
 else
-	setusershell="/bin/false"
+	setusershell="-s /bin/false"
 fi
 
 echo -n "Create home directory? (y/n): "
@@ -47,15 +47,21 @@ else
 fi
 
 echo -n "Set users group? (y/n): "
-read setgroup
-if [ "${setgroup}" = "y" ]; then
-	$setgroup = "-g users"
+read setug
+if [ "${setug}" = "y" ]; then
+	setgroup="-g users"
 else
-	$setgroup = ""
+	setgroup=""
 fi
 
-useradd $sethomedir $setexpiredate $setgroup -s $setusershell $namauser
+useradd $sethomedir $setexpiredate $setgroup $setusershell $namauser
 echo "${namauser}:${katasandi}" | chpasswd
+
+echo -n "Add user ${namauser} to sudoers? (y/n): "
+read setsudoers
+if [ "${setgroup}" = "y" ]; then
+	usermod -aG sudo $namauser
+fi
 
 clear
 echo "#######################################"
