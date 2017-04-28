@@ -6,11 +6,12 @@ Tested in GNU/Linux Ubuntu 12.04 & 14.04, and Linux Mint 17 (Rebecca).
 
 Features
 =====
-* Nginx custom build from RtCamp repository, already optimized for Wordpress site, Laravel, and Phalcon PHP Framework
+* Nginx 1.10 custom build from RtCamp repository
 * Nginx with FastCGI cache enable & disable feature
 * Nginx pre-configured optimization for low-end VPS
-* MariaDB 10 (MySQL drop-in replacement)
-* PHP 5.6, 7.0, 7.1 pulled from Ondrej's repo
+* Nginx vhost configs optimized for Wordpress, Laravel, and Phalcon PHP Framework
+* MariaDB 10.1 (MySQL drop-in replacement)
+* PHP 5.6, 7.0, 7.1 from Ondrej's repo
 * PHP-FPM sets as user running the PHP script (pool)
 * Zend OPcache
 * Memcached 1.4
@@ -24,9 +25,7 @@ Usage
 # Install Nginx, PHP 5 / 7 &amp; MariaDB
 
 ```bash
-wget --no-check-certificate https://raw.githubusercontent.com/joglomedia/deploy/master/scripts/simpleLNMPinstaller.sh
-
-sudo ./simpleLNMPinstaller.sh
+wget --no-check-certificate https://raw.githubusercontent.com/joglomedia/deploy/master/scripts/simpleLNMPinstaller.sh && chmod ugo +x simpleLNMPinstaller.sh && sudo ./simpleLNMPinstaller.sh
 ```
 
 Nginx vHost Configuration Tool (Ngxvhost)

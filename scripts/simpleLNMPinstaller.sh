@@ -72,9 +72,16 @@ apt-get autoremove -y
 
 echo "Adding repositories..."
 
-# install nginx custom with ngx cache purge from rtCamp's repo
-# https://rtcamp.com/wordpress-nginx/tutorials/single-site/fastcgi-cache-with-purging/
-add-apt-repository ppa:rtcamp/nginx
+# Nginx custom with ngx cache purge
+if [[ "$DISTRIB_RELEASE" = "16.04" || "$DISTRIB_RELEASE" = "18" ]]; then
+	# Ubuntu release 16.04, LinuxMint 18
+	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3050AC3CD2AE6F03
+	sh -c "echo 'deb http://download.opensuse.org/repositories/home:/rtCamp:/EasyEngine/xUbuntu_16.04/ /' >> /etc/apt/sources.list.d/nginx-xenial.list"
+else
+	# Ubuntu release 14.04
+	# https://rtcamp.com/wordpress-nginx/tutorials/single-site/fastcgi-cache-with-purging/
+	add-apt-repository ppa:rtcamp/nginx
+fi
 
 # Add PHP (5.6/7.0/7.1 latest stable) from Ondrej's repo
 # Source: https://launchpad.net/~ondrej/+archive/ubuntu/php
