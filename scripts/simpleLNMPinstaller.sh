@@ -77,6 +77,8 @@ if [[ "$DISTRIB_RELEASE" = "16.04" || "$DISTRIB_RELEASE" = "18" ]]; then
 	# Ubuntu release 16.04, LinuxMint 18
 	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3050AC3CD2AE6F03
 	sh -c "echo 'deb http://download.opensuse.org/repositories/home:/rtCamp:/EasyEngine/xUbuntu_16.04/ /' >> /etc/apt/sources.list.d/nginx-xenial.list"
+	# Add nginx service to systemd
+	wget --no-check-certificate https://gist.githubusercontent.com/joglomedia/3bb43ee9b17262f07dbe805aac3aee15/raw/d90c02a31c2873a0340b82554a4ec571568eb202/nginx.service -O /lib/systemd/system/nginx.service
 else
 	# Ubuntu release 14.04
 	# https://rtcamp.com/wordpress-nginx/tutorials/single-site/fastcgi-cache-with-purging/
@@ -228,7 +230,7 @@ ln -s /etc/php/${PHPVer}/mods-available/sourceguardian.ini /etc/php/${PHPVer}/cl
 ### Install Zend OpCache ###
 # Make sure Zend OpCache not yet installed by default
 OPCACHEPATH=$(find /usr/lib/php/${PHPVer}/ -name 'opcache.so')
-if [ "x$OPCACHEPATH" = "x" ]; then
+if [ -z "$OPCACHEPATH" ]; then
     pecl install zendopcache-7.0.3
     OPCACHEPATH=$(find /usr/lib/php/${PHPVer}/ -name 'opcache.so')
     # Enable Zend OpCache module
@@ -396,3 +398,4 @@ echo "# My PayPal is always open for donation, send your tips here hi@masedi.net
 echo "#                                                                          #"
 echo "# (c) 2015-2017 - MasEDI.Net - http://masedi.net ;)                        #"
 echo "#==========================================================================#"
+
