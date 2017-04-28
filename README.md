@@ -25,7 +25,7 @@ Usage
 # Install Nginx, PHP 5 / 7 &amp; MariaDB
 
 ```bash
-wget --no-check-certificate https://raw.githubusercontent.com/joglomedia/deploy/master/scripts/simpleLNMPinstaller.sh && chmod ugo +x simpleLNMPinstaller.sh && sudo ./simpleLNMPinstaller.sh
+wget --no-check-certificate https://raw.githubusercontent.com/joglomedia/deploy/master/scripts/simpleLNMPinstaller.sh && chmod ugo+x simpleLNMPinstaller.sh && sudo ./simpleLNMPinstaller.sh
 ```
 
 Nginx vHost Configuration Tool (Ngxvhost)
