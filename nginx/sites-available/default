@@ -99,7 +99,7 @@ server {
 		autoindex on;
 	}
 
-	# pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+	# pass the PHP scripts to FastCGI server listening on 127.0.0.1:8082
 	#
 	location ~ \.php$ {
 	#	# NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
@@ -138,7 +138,7 @@ server {
 #
 #server {
 #	listen 443;
-#	server_name localhost;
+#	server_name localhost.localdomain;
 #
 #	root html;
 #	index index.html index.htm;

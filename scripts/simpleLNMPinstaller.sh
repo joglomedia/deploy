@@ -35,7 +35,7 @@ function header_msg {
 clear
 cat <<- _EOF_
 #========================================================================#
-# SimpleLNMPIntaller v1.2.0-dev for Ubuntu Server, Written by MasEDI.Net #
+# SimpleLNMPIntaller v1.2.2-dev for Ubuntu Server, Written by MasEDI.Net #
 #========================================================================#
 #     A small tool to install Nginx + MariaDB (MySQL) + PHP on Linux     #
 #                                                                        #
@@ -78,8 +78,6 @@ if [[ "$DISTRIB_RELEASE" = "16.04" || "$DISTRIB_RELEASE" = "18" ]]; then
 	# Nginx custom with ngx cache purge
 	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3050AC3CD2AE6F03
 	sh -c "echo 'deb http://download.opensuse.org/repositories/home:/rtCamp:/EasyEngine/xUbuntu_16.04/ /' >> /etc/apt/sources.list.d/nginx-xenial.list"
-	# Add nginx service to systemd
-	#wget --no-check-certificate https://gist.githubusercontent.com/joglomedia/3bb43ee9b17262f07dbe805aac3aee15/raw/d90c02a31c2873a0340b82554a4ec571568eb202/nginx.service -O /lib/systemd/system/nginx.service
 
 	# Add MariaDB key servers
 	apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
@@ -156,6 +154,11 @@ mkdir /var/cache/nginx/proxy_temp
 IPAddr=$(curl -s http://ipecho.net/plain)
 # Make default server accessible from IP address
 sed -i "s@localhost.localdomain@$IPAddr@g" /etc/nginx/sites-available/default
+
+if [[ "$DISTRIB_RELEASE" = "16.04" || "$DISTRIB_RELEASE" = "18" ]]; then
+	# Fix nginx service to systemd
+	#wget --no-check-certificate https://gist.githubusercontent.com/joglomedia/3bb43ee9b17262f07dbe805aac3aee15/raw/8f14cefc412a623238d9d13e0e851edf09a8e915/nginx.service -O /lib/systemd/system/nginx.service
+fi
 
 # Restart Nginx server
 service nginx restart
