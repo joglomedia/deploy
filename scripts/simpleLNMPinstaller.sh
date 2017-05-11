@@ -323,7 +323,9 @@ apt-get install -y postfix
 
 # Install Nginx Vhost Creator
 cp -f scripts/ngxvhost.sh /usr/local/bin/ngxvhost
+cp -f scripts/ngxvhost.sh /usr/local/bin/ngxrmvhost
 chmod ugo+x /usr/local/bin/ngxvhost
+chmod ugo+x /usr/local/bin/ngxrmvhost
 
 # Install Web-viewer Tools
 mkdir /usr/share/nginx/html/tools/
