@@ -154,11 +154,6 @@ IPAddr=$(curl -s http://ipecho.net/plain)
 # Make default server accessible from IP address
 sed -i "s@localhost.localdomain@$IPAddr@g" /etc/nginx/sites-available/default
 
-if [[ "$DISTRIB_RELEASE" = "16.04" ]] || [[ "$DISTRIB_RELEASE" = "18" ]]; then
-	# Fix nginx service to systemd
-	#wget --no-check-certificate https://gist.githubusercontent.com/joglomedia/3bb43ee9b17262f07dbe805aac3aee15/raw/8f14cefc412a623238d9d13e0e851edf09a8e915/nginx.service -O /lib/systemd/system/nginx.service
-fi
-
 # Restart Nginx server
 service nginx restart
 
