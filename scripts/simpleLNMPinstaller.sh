@@ -138,7 +138,6 @@ cp -fr nginx/ssl/ /etc/nginx/
 mv /etc/nginx/sites-available/default /etc/nginx/sites-available/default.old
 cp -f nginx/sites-available/default /etc/nginx/sites-available/
 cp -f nginx/sites-available/phpmyadmin.conf /etc/nginx/sites-available/
-cp -f nginx/sites-available/adminer.conf /etc/nginx/sites-available/
 cp -f nginx/sites-available/sample-wordpress.dev.conf /etc/nginx/sites-available/
 cp -f nginx/sites-available/sample-wordpress-ms.dev.conf /etc/nginx/sites-available/
 cp -f nginx/sites-available/ssl.sample-site.dev.conf /etc/nginx/sites-available/
@@ -155,7 +154,7 @@ IPAddr=$(curl -s http://ipecho.net/plain)
 # Make default server accessible from IP address
 sed -i "s@localhost.localdomain@$IPAddr@g" /etc/nginx/sites-available/default
 
-if [[ "$DISTRIB_RELEASE" = "16.04" || "$DISTRIB_RELEASE" = "18" ]]; then
+if [[ "$DISTRIB_RELEASE" = "16.04" ]] || [[ "$DISTRIB_RELEASE" = "18" ]]; then
 	# Fix nginx service to systemd
 	#wget --no-check-certificate https://gist.githubusercontent.com/joglomedia/3bb43ee9b17262f07dbe805aac3aee15/raw/8f14cefc412a623238d9d13e0e851edf09a8e915/nginx.service -O /lib/systemd/system/nginx.service
 fi
