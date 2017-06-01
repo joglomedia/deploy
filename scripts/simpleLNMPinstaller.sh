@@ -51,7 +51,9 @@ header_msg
 echo "Clone LNMP installer scripts..."
 
 # Clone the deployment server config
-git clone https://github.com/joglomedia/deploy.git deploy
+if [ ! -d "deploy" ]; then
+	git clone https://github.com/joglomedia/deploy.git deploy
+fi
 
 # Fix file permission
 find deploy -type d -print0 | xargs -0 chmod 755
@@ -94,6 +96,7 @@ else
 fi
 
 # Add MariaDB repo from MariaDB repo configuration tool
+if [ ! -f "/etc/apt/sources.list.d/MariaDB-${OS_DISTRIB}.list" ]; then
 touch /etc/apt/sources.list.d/MariaDB-${OS_DISTRIB}.list
 cat > /etc/apt/sources.list.d/MariaDB-${OS_DISTRIB}.list <<EOL
 # MariaDB 10.1 repository list - created 2014-11-30 14:04 UTC
@@ -101,10 +104,13 @@ cat > /etc/apt/sources.list.d/MariaDB-${OS_DISTRIB}.list <<EOL
 deb [arch=amd64,i386] http://ftp.osuosl.org/pub/mariadb/repo/10.1/ubuntu ${OS_DISTRIB} main
 deb-src http://ftp.osuosl.org/pub/mariadb/repo/10.1/ubuntu ${OS_DISTRIB} main
 EOL
+fi
 	
 # Add PHP (5.6/7.0/7.1 latest stable) from Ondrej's repo
 # Source: https://launchpad.net/~ondrej/+archive/ubuntu/php
 add-apt-repository ppa:ondrej/php
+# Fix for NO_PUBKEY key servers error
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4F4EA0AAE5267A6C
 
 echo "Update repository and install pre-requisite.."
 
@@ -304,16 +310,17 @@ service mysql restart
 
 ### END OF MySQL ###
 
+### INSTALL MAIL SERVER ###
 
-### INSTALL ADDSON ###
-echo "Installing Adds on..."
+# Install Postfix mail server
+apt-get install -y mailutils postfix
 
 # Update local time
 apt-get install -y ntpdate
 ntpdate -d cn.pool.ntp.org
 
-# Install Postfix mail server
-apt-get install -y postfix
+### INSTALL ADDSON ###
+echo "Installing Adds on..."
 
 # Install Nginx Vhost Creator
 cp -f scripts/ngxvhost.sh /usr/local/bin/ngxvhost
@@ -340,12 +347,8 @@ cat > /usr/share/nginx/html/tools/phpinfo.php <<EOL
 <?php phpinfo(); ?>
 EOL
 
-### Install Siege Benchmark ###
-#git clone https://github.com/JoeDog/siege.git
-#cd siege
-#./configure
-#make && make install
-#cd ../
+### Install Let's Encrypt SSL ###
+#sudo add-apt-repository ppa:certbot/certbot
 
 ### END OF ADDSON ###
 
